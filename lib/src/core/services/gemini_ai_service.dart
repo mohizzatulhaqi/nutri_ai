@@ -45,15 +45,11 @@ class GeminiAiServiceImpl implements GeminiAiService {
     String text,
     Uint8List imageBytes,
   ) async {
+    throw UnimplementedError();
     // STEP 1: Create a text part from the input text prompt
-    final prompt = TextPart(text);
 
     // STEP 2: Create an image part from the provided image bytes (JPEG format)
-    final imagePart = DataPart('image/jpeg', imageBytes);
 
     // STEP 3: Generate content by combining text and image in a multi-part content request
-    return generateContent([
-      Content.multi([prompt, imagePart]),
-    ]);
   }
 }

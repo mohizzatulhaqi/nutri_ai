@@ -20,100 +20,25 @@ class GeminiApiDataSourceImpl implements GeminiApiDataSource {
 
   @override
   Future<FoodAnalysisModel> analyzeImage(Uint8List imageBytes) async {
-    try {
-      // Step 1: Define the JSON schema structure for the AI response
-      // This ensures the AI returns data in the exact format we need
-      final schemaPrompt = JsonSchemaPrompt.forObject(
-        instruction:
-            'Analyze the food in this image and provide a nutritional analysis. '
-            'Make reasonable estimates for a typical serving size.',
-        properties: {
-          'foodName': PropertyBuilder.string(
-            description: 'Name of the food item',
-          ),
-          'description': PropertyBuilder.string(
-            description: 'Brief description of the food',
-          ),
-          'calories': PropertyBuilder.number(
-            description: 'Calories per serving',
-            minimum: 0,
-          ),
-          'protein': PropertyBuilder.number(
-            description: 'Protein in grams',
-            minimum: 0,
-          ),
-          'fat': PropertyBuilder.number(
-            description: 'Fat in grams',
-            minimum: 0,
-          ),
-          'carbohydrates': PropertyBuilder.number(
-            description: 'Carbohydrates in grams',
-            minimum: 0,
-          ),
-          'micronutrients': PropertyBuilder.array(
-            description: 'List of micronutrients present',
-            items: PropertyBuilder.string(),
-          ),
-          'ingredients': PropertyBuilder.array(
-            description: 'List of main ingredients',
-            items: PropertyBuilder.string(),
-          ),
-        },
-        required: [
-          'foodName',
-          'description',
-          'calories',
-          'protein',
-          'fat',
-          'carbohydrates',
-          'micronutrients',
-          'ingredients',
-        ],
-      );
+    throw UnimplementedError();
 
-      // Step 2: Generate the prompt text from the schema
-      // This creates a formatted prompt that guides the AI to respond correctly
-      final promptText = JsonSchemaPrompt.generate(schemaPrompt);
+    // Step 1: Define the JSON schema structure for the AI response
+    // This ensures the AI returns data in the exact format we need
 
-      // Step 3: Send the image and prompt to Gemini AI API
-      debugPrint('Sending request to Gemini API (Vision)...');
-      final response = await _geminiService.generateContentFromTextAndImage(
-        promptText,
-        imageBytes,
-      );
+    // Step 2: Generate the prompt text from the schema
+    // This creates a formatted prompt that guides the AI to respond correctly
 
-      // Step 4: Log the response received from the API
-      debugPrint('Response received from Gemini API');
-      debugPrint('Response text: ${response.text}');
+    // Step 3: Send the image and prompt to Gemini AI API
 
-      // Step 5: Validate that we received a non-empty response
-      if (response.text == null || response.text!.isEmpty) {
-        debugPrint('Empty response from Gemini API');
-        throw Exception('No response received from Gemini API');
-      }
+    // Step 4: Log the response received from the API
 
-      // Step 6: Extract the JSON text from the response
-      String jsonText = response.text!;
+    // Step 5: Validate that we received a non-empty response
 
-      // Step 7: Parse the JSON response and convert to FoodAnalysisModel
-      try {
-        // Parse the JSON string into a Map using the defined schema
-        final parsedData = JsonSchemaParser.parseObject(
-          jsonText,
-          schema: schemaPrompt.schema,
-        );
-        // Convert the Map to our FoodAnalysisModel object
-        return FoodAnalysisModel.fromJson(parsedData);
-      } catch (e) {
-        // Step 8: Handle JSON parsing errors
-        debugPrint('Error parsing JSON: $e');
-        throw Exception('Failed to parse nutritional analysis from response');
-      }
-    } catch (e) {
-      // Step 9: Handle any errors that occur during the entire process
-      debugPrint('Error in analyzeImage: $e');
-      rethrow;
-    }
+    // Step 6: Extract the JSON text from the response
+
+    // Step 7: Parse the JSON response and convert to FoodAnalysisModel
+
+    // Step 8: Handle JSON parsing errors
   }
 
   @override
