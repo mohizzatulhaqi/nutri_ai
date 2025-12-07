@@ -12,10 +12,12 @@ class AnalysisCubit extends Cubit<AnalysisState> {
   AnalysisCubit(this._analyzeFoodImageUseCase)
     : super(const AnalysisState.initial());
 
-  Future<void> analyzeImage(Uint8List imageBytes) async {
+  Future<void> analyzeImage(Uint8List imageBytes, String languageCode) async {
     debugPrint('Cubit: Starting image analysis...');
     emit(const AnalysisState.loading());
-    final result = await _analyzeFoodImageUseCase(Params(imageBytes));
+    final result = await _analyzeFoodImageUseCase(
+      Params(imageBytes, languageCode),
+    );
     result.fold(
       (failure) {
         final errorMessage = failure.toString();

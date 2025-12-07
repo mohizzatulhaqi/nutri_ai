@@ -15,10 +15,11 @@ class FoodAnalysisRepositoryImpl implements FoodAnalysisRepository {
   @override
   Future<Either<Failure, FoodAnalysis>> analyzeImage(
     Uint8List imageBytes,
+    String languageCode,
   ) async {
     try {
       debugPrint('Repository: Starting image analysis...');
-      final result = await _dataSource.analyzeImage(imageBytes);
+      final result = await _dataSource.analyzeImage(imageBytes, languageCode);
       debugPrint('Repository: Analysis completed successfully');
       return Either.right(result.toEntity());
     } catch (e) {

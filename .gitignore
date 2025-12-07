@@ -154,3 +154,6 @@ app-release/
 firebase.json
 google-services.json
 GoogleService-Info.plist
+
+# Ignore API keys file
+env.g.dart

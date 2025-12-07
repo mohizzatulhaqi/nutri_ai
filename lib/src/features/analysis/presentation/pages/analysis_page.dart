@@ -268,7 +268,11 @@ class _AnalysisPageState extends State<AnalysisPage> {
       });
       final Uint8List imageBytes = await pickedFile.readAsBytes();
       if (!context.mounted) return;
-      context.read<AnalysisCubit>().analyzeImage(imageBytes);
+
+      final locale = Localizations.localeOf(context);
+      final languageCode = locale.languageCode;
+
+      context.read<AnalysisCubit>().analyzeImage(imageBytes, languageCode);
     }
   }
 

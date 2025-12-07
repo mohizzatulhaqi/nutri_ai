@@ -14,12 +14,16 @@ class AnalyzeFoodImageUseCase implements UseCase<FoodAnalysis, Params> {
 
   @override
   Future<Either<Failure, FoodAnalysis>> call(Params params) async {
-    return await _repository.analyzeImage(params.imageBytes);
+    return await _repository.analyzeImage(
+      params.imageBytes,
+      params.languageCode,
+    );
   }
 }
 
 class Params {
   final Uint8List imageBytes;
+  final String languageCode;
 
-  Params(this.imageBytes);
+  Params(this.imageBytes, this.languageCode);
 }

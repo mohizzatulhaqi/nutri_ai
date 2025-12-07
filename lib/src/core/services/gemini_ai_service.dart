@@ -45,11 +45,26 @@ class GeminiAiServiceImpl implements GeminiAiService {
     String text,
     Uint8List imageBytes,
   ) async {
-    throw UnimplementedError();
-    // STEP 1: Create a text part from the input text prompt
+    try {
+      debugPrint('Sending text + image request to Gemini API...');
 
-    // STEP 2: Create an image part from the provided image bytes (JPEG format)
+      // STEP 1: Create text part
+      final textPart = TextPart(text);
 
-    // STEP 3: Generate content by combining text and image in a multi-part content request
+      // STEP 2: Create image part (JPEG)
+      final imagePart = DataPart('image/jpeg', imageBytes);
+
+      // STEP 3: Combine into multi-part content
+      final content = Content.multi([textPart, imagePart]);
+
+      // STEP 4: Send to Gemini
+      final response = await _model.generateContent([content]);
+
+      debugPrint('Response received from Gemini API (Text + Image)');
+      return response;
+    } catch (e) {
+      debugPrint('Error in generateContentFromTextAndImage: $e');
+      rethrow;
+    }
   }
 }
