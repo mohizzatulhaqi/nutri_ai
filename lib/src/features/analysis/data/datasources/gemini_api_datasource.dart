@@ -161,25 +161,56 @@ ${languageInstruction}
       // Generate JSON schema prompt for array of FoodRecommendationModel
       final schemaPrompt = JsonSchemaPrompt.forObjectArray(
         instruction:
-            'Based on the preference "$preference", recommend 5 Indonesian foods. '
-            'For each food, provide a nutritional analysis and a reason for the recommendation.',
+            '''
+You are a professional nutritionist.
+
+Based on the user preference: "$preference", generate EXACTLY 5 Indonesian food recommendations.
+
+Each recommendation MUST be returned as a JSON object with this structure:
+{
+  "analysis": { FoodAnalysisObject }
+}
+
+RULES:
+- The result must be a PURE JSON ARRAY.
+- Do NOT add explanations outside JSON.
+- Do NOT use markdown.
+- Do NOT wrap JSON with backticks.
+- Each food must be relevant to the given preference.
+- All nutritional values must be realistic for ONE serving.
+- Calories must follow:
+  - Protein (4 kcal/g)
+  - Carbohydrates (4 kcal/g)
+  - Fat (9 kcal/g)
+- Assume foods are Indonesian unless clearly not.
+- Never include double quotes inside string values unless escaped properly.
+- Do not include stray quotation marks inside ingredients or micronutrients.
+''',
+
         objectProperties: {
           'analysis': PropertyBuilder.object(
-            description: 'Nutritional analysis of the food',
+            description: 'Full nutritional analysis of the recommended food',
           ),
         },
+
         required: ['analysis'],
+
         additionalInstructions: [
-          'The analysis object should contain:',
-          '  - foodName: Name of the food item',
-          '  - description: Brief description of the food',
-          '  - calories: Calories per serving (number)',
-          '  - protein: Protein in grams (number)',
-          '  - fat: Fat in grams (number)',
-          '  - carbohydrates: Carbohydrates in grams (number)',
-          '  - micronutrients: Array of micronutrients',
-          '  - ingredients: Array of main ingredients',
-          '  - recommendationReason: Array of reasons for recommendation',
+          'The "analysis" object MUST contain ONLY the following fields:',
+          '- foodName: string',
+          '- description: string (mention if estimation)',
+          '- calories: number (kcal)',
+          '- protein: number (grams)',
+          '- fat: number (grams)',
+          '- carbohydrates: number (grams)',
+          '- micronutrients: array of string',
+          '- ingredients: array of string',
+          '- recommendationReason: array of string explaining why this food fits the preference',
+
+          'macronutrient values must be mathematically consistent with calories',
+          'ingredients must only include common visible or implied ingredients',
+          'recommendationReason must directly relate to the user preference',
+          'use simple Indonesian food names',
         ],
       );
 
@@ -196,17 +227,11 @@ ${languageInstruction}
         throw Exception('No response received from Gemini API');
       }
 
-      String jsonText = response.text!;
+      final parsedArray = JsonSchemaParser.parseObjectArray(response.text!);
 
-      try {
-        final parsedArray = JsonSchemaParser.parseObjectArray(jsonText);
-        return parsedArray
-            .map((item) => FoodRecommendationModel.fromJson(item))
-            .toList();
-      } catch (e) {
-        debugPrint('Error parsing JSON: $e');
-        throw Exception('Failed to parse food recommendations from response');
-      }
+      return parsedArray
+          .map((item) => FoodRecommendationModel.fromJson(item))
+          .toList();
     } catch (e) {
       debugPrint('Error in getFoodRecommendations: $e');
       rethrow;
